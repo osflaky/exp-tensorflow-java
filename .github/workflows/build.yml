@@ -1,0 +1,49 @@
+name: CI build
+on:
+  workflow_dispatch:
+env:
+  DEPLOY: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/master' 
+    || startsWith(github.ref, 'refs/heads/r')) }}
+jobs:
+  linux-arm64:
+    runs-on: ubuntu-2204-arm64-2c
+    strategy:
+      matrix:
+        include:
+        - ext: ""
+          expander_leg: ubuntu-2204-arm64-2c--x64
+      fail-fast: false
+    steps:
+    - name: Install environment
+      run: |
+        sudo apt update
+        sudo apt install -y curl wget unzip tar git gcc g++
+    - name: Configure Java
+      uses: actions/setup-java@v5
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        architecture: 'aarch64'
+    - name: Checkout repository
+      uses: actions/checkout@v6
+    - name: Build project
+      run: |
+        gcc --version
+        mvn -version
+        mvn clean install -pl '!tensorflow-framework' -B -U -e -Djavacpp.platform=${{ github.job }} -Djavacpp.platform.extension=${{ matrix.ext }}
+    - name: Build native artifact
+      run: mvn -f tensorflow-core/tensorflow-core-native/pom.xml package -B -e 
+        -Djavacpp.platform=${{ github.job }} -Djavacpp.platform.extension=${{ 
+        matrix.ext }}
+    - name: Upload native artifact
+      if: env.DEPLOY == 'true'
+      uses: actions/upload-artifact@v7
+      with:
+        name: native-artifact-${{ github.job }}${{ matrix.ext }}
+        path: 
+          tensorflow-core/tensorflow-core-native/target/tensorflow-core-native-*-${{
+          github.job }}*.jar
+        if-no-files-found: error
+        retention-days: 1
+    name: linux-arm64 [${{ matrix.expander_leg }}]
+    timeout-minutes: 150
