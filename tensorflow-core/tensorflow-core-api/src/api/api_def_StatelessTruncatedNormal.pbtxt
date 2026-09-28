@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "StatelessTruncatedNormal"
+  endpoint {
+    name: "random.StatelessTruncatedNormal"
+  }
+}

@@ -1,0 +1,11 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "TPUCompilationResult"
+  endpoint {
+    name: "tpu.CompilationResult"
+  }
+  endpoint {
+    name: "tpu.TPUCompilationResult"
+    deprecated: true
+  }
+}

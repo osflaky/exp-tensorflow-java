@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "QueueDequeueV2"
+  endpoint {
+    name: "io.QueueDequeue"
+  }
+}

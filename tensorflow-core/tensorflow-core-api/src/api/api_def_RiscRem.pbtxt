@@ -1,0 +1,7 @@
+op {
+  visibility: SKIP
+  graph_op_name: "RiscRem"
+  endpoint {
+    name: "risc.RiscRem"
+  }
+}

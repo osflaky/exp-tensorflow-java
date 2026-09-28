@@ -1,0 +1,11 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "TensorArraySizeV3"
+  endpoint {
+    name: "TensorArraySize"
+  }
+  out_arg {
+    name: "size"
+    rename_to: "output"
+  }
+}

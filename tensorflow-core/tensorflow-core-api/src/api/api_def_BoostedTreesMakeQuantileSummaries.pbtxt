@@ -1,0 +1,7 @@
+op {
+  visibility: SKIP
+  graph_op_name: "BoostedTreesMakeQuantileSummaries"
+  endpoint {
+    name: "estimator.BoostedTreesMakeQuantileSummaries"
+  }
+}

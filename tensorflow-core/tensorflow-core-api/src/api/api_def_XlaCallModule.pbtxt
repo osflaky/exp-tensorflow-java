@@ -1,0 +1,7 @@
+op {
+  graph_op_name: "XlaCallModule"
+  visibility: VISIBLE
+  endpoint {
+    name: "xla.XlaCallModule"
+  }
+}

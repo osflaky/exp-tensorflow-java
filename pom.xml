@@ -1,0 +1,663 @@
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.tensorflow</groupId>
+  <artifactId>tensorflow-java</artifactId>
+  <version>1.3.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>TensorFlow Java Parent</name>
+  <description>Parent POM of TensorFlow artifacts</description>
+
+  <url>https://www.tensorflow.org</url>
+  <inceptionYear>2015</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>https://github.com/tensorflow/java.git</url>
+    <connection>scm:git@github.com:tensorflow/java.git</connection>
+    <developerConnection>scm:git:https://github.com/tensorflow/java.git</developerConnection>
+  </scm>
+
+  <modules>
+    <module>tensorflow-ndarray</module>
+    <module>tensorflow-core</module>
+    <module>tensorflow-framework</module>
+  </modules>
+
+  <properties>
+    <javacpp.platform>${os.name}-${os.arch}</javacpp.platform>
+
+    <project.build.sourceEncoding>UTF8</project.build.sourceEncoding>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.release>11</maven.compiler.release>
+    <junit.version>5.10.0</junit.version>
+    <jmh.version>1.37</jmh.version>
+    <versions-plugin.version>2.7</versions-plugin.version>
+    <errorprone.version>2.25.0</errorprone.version>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+    <maven.source.skip>true</maven.source.skip>
+    <gpg.skip>true</gpg.skip>
+    <spotless.version>2.46.1</spotless.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>central-snapshots</id>
+      <name>Maven Central Snapshots</name>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>central-snapshots</id>
+      <name>Maven Central Plugin Snapshots</name>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>central</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>central</id>
+      <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deployByRepositoryId/${stagingRepositoryId}/</url>
+    </repository>
+  </distributionManagement>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.openjdk.jmh</groupId>
+        <artifactId>jmh-core</artifactId>
+        <version>${jmh.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.openjdk.jmh</groupId>
+        <artifactId>jmh-generator-annprocess</artifactId>
+        <version>${jmh.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <profiles>
+    <!--
+    Developer profile
+        Enable javadoc generation so the developer is aware of any mistake that might prevent
+        ultimately the deployment of the artifacts
+    -->
+    <profile>
+      <id>dev</id>
+      <properties>
+        <maven.javadoc.skip>false</maven.javadoc.skip>
+      </properties>
+    </profile>
+
+    <!--
+    Deploying profile
+        Build the Javadoc when deploying
+    -->
+    <profile>
+      <id>deploying</id>
+      <properties>
+        <maven.javadoc.skip>false</maven.javadoc.skip>
+        <maven.source.skip>false</maven.source.skip>
+      </properties>
+    </profile>
+
+    <!--
+    Releasing profile
+        Activate GPG signing on all built artifacts and fetch native artifacts from staging repository
+    -->
+    <profile>
+      <id>releasing</id>
+      <properties>
+        <gpg.skip>false</gpg.skip>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.12.0</version>
+            <configuration>
+              <overview>./docs/overview.md</overview>
+              <!--<includeDependencySources>true</includeDependencySources>-->
+              <bottom>Copyright 2015, 2026 The TensorFlow Authors. All Rights Reserved.</bottom>
+              <additionalJOptions>
+                <additionalJOption>-Xmaxerrs</additionalJOption>
+                <additionalJOption>65536</additionalJOption>
+                <additionalJOption>-Xmaxwarns</additionalJOption>
+                <additionalJOption>65536</additionalJOption>
+              </additionalJOptions>
+              <doclint>none</doclint>
+              <failOnError>false</failOnError>
+              <minmemory>256m</minmemory>
+              <maxmemory>2048m</maxmemory>
+              <links>
+                <link>https://protobuf.dev/reference/java/api-docs</link>
+                <link>https://bytedeco.org/javacpp/apidocs</link>
+              </links>
+              <quiet>true</quiet>
+            </configuration>
+            <executions>
+              <execution>
+                <id>javadoc-site</id>
+                <goals>
+                  <goal>javadoc</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>jdk17</id>
+      <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
+      </properties>
+    </profile>
+
+    <!--
+      Profile that enables lint checks on compilation
+      Uses Google Error Prone for more coverage
+    -->
+    <profile>
+      <id>lint</id>
+      <activation>
+        <!-- custom property to disable link checks on command line (enabled by default) -->
+        <property>
+          <name>lint.skip</name>
+          <value>!true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.11.0</version>
+            <configuration>
+              <showWarnings>true</showWarnings>
+              <compilerArgs combine.children="append">
+                <!--arg>-Werror</arg--> <!-- Disabled (temporarily?) -->
+                <arg>-Xlint:all</arg>
+                <arg>-XDcompilePolicy=simple</arg>
+                <!-- FIXME: turn me on again! arg>-Xplugin:ErrorProne</arg-->
+                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
+                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
+
+                <!-- We need to repeat all arguments found in jvm.config here or we'll lose them -->
+                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
+                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
+                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
+                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>
+                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
+                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
+                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
+                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
+              </compilerArgs>
+              <annotationProcessorPaths combine.children="append">
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>${errorprone.version}</version>
+                </path>
+              </annotationProcessorPaths>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!--
+      Profile to run spotless:apply on builds.  Will run before format's check.
+    -->
+    <profile>
+      <id>apply-format</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <version>${spotless.version}</version>
+
+            <executions>
+              <execution>
+                <!-- Runs in initialize phase to fail fast in case of formatting issues (should be before codegen).-->
+                <id>spotless-apply</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>apply</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!--
+      Profile that enables format checks on compilation
+      Can auto-format using spotless:apply.
+    -->
+    <profile>
+      <id>check-format</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <version>${spotless.version}</version>
+
+            <executions>
+              <execution>
+                <!-- Runs in initialize phase to fail fast in case of formatting issues (should be before codegen).-->
+                <id>spotless-check</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>linuxos</id>
+      <activation>
+        <os><name>linux</name></os>
+      </activation>
+      <properties>
+        <os.kernel>linux</os.kernel>
+        <os.name>linux</os.name>
+      </properties>
+    </profile>
+    <profile>
+      <id>linux-x86_64</id>
+      <activation>
+        <os>
+          <name>linux</name>
+          <arch>amd64</arch>
+        </os>
+        <property>
+          <name>!javacpp.platform.extension</name>
+        </property>
+      </activation>
+    </profile>
+    <profile>
+      <id>linux-x86_64-gpu</id>
+      <activation>
+        <os>
+          <name>linux</name>
+          <arch>amd64</arch>
+        </os>
+        <property>
+          <name>javacpp.platform.extension</name>
+          <value>-gpu</value>
+        </property>
+      </activation>
+    </profile>
+    <profile>
+      <id>linux-arm64</id>
+      <activation>
+        <os>
+          <name>linux</name>
+          <arch>aarch64</arch>
+        </os>
+        <property>
+          <name>!javacpp.platform.extension</name>
+        </property>
+      </activation>
+    </profile>
+    <profile>
+      <id>macosx</id>
+      <activation>
+        <os><name>mac os x</name></os>
+      </activation>
+      <properties>
+        <os.kernel>darwin</os.kernel>
+        <os.name>macosx</os.name>
+      </properties>
+    </profile>
+    <profile>
+      <id>macosx-x86_64</id>
+      <activation>
+        <os>
+          <name>mac os x</name>
+          <arch>x86_64</arch>
+        </os>
+      </activation>
+    </profile>
+    <profile>
+      <id>macosx-arm64</id>
+      <activation>
+        <os>
+          <name>mac os x</name>
+          <arch>aarch64</arch>
+        </os>
+      </activation>
+    </profile>
+    <profile>
+      <id>windowsos</id>
+      <activation>
+        <os><family>windows</family></os>
+      </activation>
+      <properties>
+        <os.kernel>windows</os.kernel>
+        <os.name>windows</os.name>
+      </properties>
+    </profile>
+    <profile>
+      <id>windows-x86_64</id>
+      <activation>
+        <os>
+          <name>windows</name>
+          <arch>x86_64</arch>
+        </os>
+      </activation>
+    </profile>
+    <profile>
+      <id>arm</id>
+      <activation>
+        <os><arch>arm</arch></os>
+      </activation>
+      <properties>
+        <os.arch>armhf</os.arch>
+      </properties>
+    </profile>
+    <profile>
+      <id>aarch64</id>
+      <activation>
+        <os><arch>aarch64</arch></os>
+      </activation>
+      <properties>
+        <os.arch>arm64</os.arch>
+      </properties>
+    </profile>
+    <profile>
+      <id>armv8</id>
+      <activation>
+        <os><arch>armv8</arch></os>
+      </activation>
+      <properties>
+        <os.arch>arm64</os.arch>
+      </properties>
+    </profile>
+    <profile>
+      <id>amd64</id>
+      <activation>
+        <os><arch>amd64</arch></os>
+      </activation>
+      <properties>
+        <os.arch>x86_64</os.arch>
+      </properties>
+    </profile>
+    <profile>
+      <id>x86-64</id>
+      <activation>
+        <os><arch>x86-64</arch></os>
+      </activation>
+      <properties>
+        <os.arch>x86_64</os.arch>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>linux</id>
+      <activation>
+        <os>
+          <family>unix</family>
+          <name>Linux</name>
+        </os>
+      </activation>
+      <properties>
+        <os.adjusted.name>linux</os.adjusted.name>
+      </properties>
+    </profile>
+    <profile>
+      <id>darwin</id>
+      <activation>
+        <os>
+          <family>unix</family>
+          <name>Mac OS X</name>
+        </os>
+      </activation>
+      <properties>
+        <os.adjusted.name>darwin</os.adjusted.name>
+      </properties>
+    </profile>
+    <profile>
+      <id>windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <os.adjusted.name>windows</os.adjusted.name>
+      </properties>
+    </profile>
+  </profiles>
+
+  <!-- http://central.sonatype.org/pages/requirements.html#developer-information -->
+  <developers>
+    <developer>
+      <name>SIG JVM</name>
+      <organization>TensorFlow</organization>
+      <organizationUrl>https://www.tensorflow.org</organizationUrl>
+    </developer>
+  </developers>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <fork>true</fork> <!-- Required for JDK16+ -->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <id>enforce</id>
+            <configuration>
+              <rules>
+                <dependencyConvergence/>
+                <requireMavenVersion>
+                  <version>3.6</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>3.2.8</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <signer>bc</signer>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.12.0</version>
+      <configuration>
+          <overview>./docs/overview.md</overview>
+          <!--<includeDependencySources>true</includeDependencySources>-->
+          <bottom>Copyright 2015, 2026 The TensorFlow Authors. All Rights Reserved.</bottom>
+          <additionalJOptions>
+              <additionalJOption>-Xmaxerrs</additionalJOption>
+              <additionalJOption>65536</additionalJOption>
+              <additionalJOption>-Xmaxwarns</additionalJOption>
+              <additionalJOption>65536</additionalJOption>
+          </additionalJOptions>
+          <failOnError>false</failOnError>
+          <minmemory>256m</minmemory>
+          <maxmemory>2048m</maxmemory>
+          <links>
+              <link>https://protobuf.dev/reference/java/api-docs</link>
+              <link>https://bytedeco.org/javacpp/apidocs</link>
+          </links>
+      </configuration>
+        <executions>
+            <execution>
+                <id>javadoc-site</id>
+                <goals>
+                    <goal>javadoc</goal>
+                </goals>
+            </execution>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>${versions-plugin.version}</version>
+        <configuration>
+          <generateBackupPoms>false</generateBackupPoms>
+          <processAllModules>true</processAllModules>
+          <updateMatchingVersions>true</updateMatchingVersions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>${spotless.version}</version>
+        <configuration>
+          <ratchetFrom>origin/master</ratchetFrom>
+          <lineEndings/>
+          <java>
+            <googleJavaFormat>
+              <version>1.20.0</version>
+            </googleJavaFormat>
+            <removeUnusedImports/>
+          </java>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.3.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.1.2</version>
+          <configuration combine.children="append">
+            <includes>
+              <include>**/*Test.java</include>
+            </includes>
+            <useModulePath>false</useModulePath>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <version>0.11.0</version>
+          <extensions>true</extensions>
+          <configuration>
+            <publishingServerId>central</publishingServerId>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>
+

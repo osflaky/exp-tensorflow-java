@@ -1,0 +1,7 @@
+op {
+  visibility: SKIP
+  graph_op_name: "XlaSendTPUEmbeddingGradients"
+  endpoint {
+    name: "xla.XlaSendTPUEmbeddingGradients"
+  }
+}

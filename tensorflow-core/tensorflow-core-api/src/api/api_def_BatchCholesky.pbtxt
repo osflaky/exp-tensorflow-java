@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "BatchCholesky"
+  endpoint {
+    name: "linalg.BatchCholesky"
+  }
+}

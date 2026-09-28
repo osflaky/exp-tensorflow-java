@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "ComputeBatchSize"
+  endpoint {
+    name: "train.ComputeBatchSize"
+  }
+}

@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "Qr"
+  endpoint {
+    name: "linalg.Qr"
+  }
+}

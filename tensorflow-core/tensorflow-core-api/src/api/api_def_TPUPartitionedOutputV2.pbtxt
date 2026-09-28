@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "TPUPartitionedOutputV2"
+  endpoint {
+    name: "tpu.PartitionedOutput"
+  }
+}

@@ -1,0 +1,4 @@
+op {
+  graph_op_name: "StatelessRandomGammaV2"
+  visibility: SKIP
+}

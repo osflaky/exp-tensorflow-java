@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "SparseSliceGrad"
+  endpoint {
+    name: "sparse.SparseSliceGrad"
+  }
+}

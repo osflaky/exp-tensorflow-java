@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "SparseReshape"
+  endpoint {
+    name: "sparse.SparseReshape"
+  }
+}

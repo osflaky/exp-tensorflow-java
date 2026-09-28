@@ -1,0 +1,10 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "QuantizeAndDequantizeV3"
+  endpoint {
+    name: "quantization.QuantizeAndDequantizeV3"
+  }
+  endpoint {
+    name: "quantization.QuantizeAndDequantize"
+  }
+}

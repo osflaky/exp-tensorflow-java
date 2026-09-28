@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "PaddingFIFOQueueV2"
+  endpoint {
+    name: "io.PaddingFifoQueue"
+  }
+}

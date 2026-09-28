@@ -1,0 +1,7 @@
+op {
+  graph_op_name: "ComputeDedupDataSize"
+  visibility: SKIP
+  endpoint {
+    name: "tpu.ComputeDedupDataSize"
+  }
+}

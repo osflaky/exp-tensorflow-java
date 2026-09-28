@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "ApplyRMSProp"
+  endpoint {
+    name: "train.ApplyRmsProp"
+  }
+}

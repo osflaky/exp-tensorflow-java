@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "FakeQuantWithMinMaxVarsPerChannelGradient"
+  endpoint {
+    name: "quantization.FakeQuantWithMinMaxVarsPerChannelGradient"
+  }
+}

@@ -1,0 +1,11 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "TPUEmbeddingActivations"
+  endpoint {
+    name: "tpu.EmbeddingActivations"
+  }
+  endpoint {
+    name: "tpu.TPUEmbeddingActivations"
+    deprecated: true
+  }
+}

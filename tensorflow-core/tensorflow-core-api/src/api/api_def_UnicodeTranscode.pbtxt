@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "UnicodeTranscode"
+  endpoint {
+    name: "strings.UnicodeTranscode"
+  }
+}

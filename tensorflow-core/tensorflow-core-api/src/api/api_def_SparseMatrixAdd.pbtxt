@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "SparseMatrixAdd"
+  endpoint {
+    name: "linalg.sparse.SparseMatrixAdd"
+  }
+}

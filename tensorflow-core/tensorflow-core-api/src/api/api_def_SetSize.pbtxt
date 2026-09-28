@@ -1,0 +1,8 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "SetSize"
+  out_arg {
+    name: "size"
+    rename_to: "output"
+  }
+}

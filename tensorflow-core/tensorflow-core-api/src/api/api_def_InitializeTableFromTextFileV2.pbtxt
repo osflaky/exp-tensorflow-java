@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "InitializeTableFromTextFileV2"
+  endpoint {
+    name: "InitializeTableFromTextFile"
+  }
+}

@@ -1,0 +1,7 @@
+op {
+  visibility: VISIBLE
+  graph_op_name: "LoadAndRemapMatrix"
+  endpoint {
+    name: "linalg.LoadAndRemapMatrix"
+  }
+}
